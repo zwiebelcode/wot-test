@@ -40,9 +40,14 @@ public class OmpId {
 		trustedIdentmanager = true;
 	}
 	
-	public void signFingerprint(OmpId child, String fingerprint) {
+	private void signFingerprint(OmpId child, String fingerprint) {
 		child.fingerprint = fingerprint;
 		signedChildFingerprints.add(child);
+	}
+	
+	// inside, it needs a check in real life
+	public void requestSignatureAt(OmpId signer, String fingerprint) {
+		signer.signFingerprint(this, fingerprint);
 	}
 	
 	public OmpId[] getSignedFingerprints() {

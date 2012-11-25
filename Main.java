@@ -19,7 +19,7 @@ public class Main {
 		rootIds.add(rootR);
 		
 		OmpId userA = new OmpId("a.onion");
-		rootX.signFingerprint(userA, "finger-a");
+		userA.requestSignatureAt(rootX, "finger-a");
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
 		wot.add(rootX);
@@ -43,7 +43,7 @@ public class Main {
 		 */
 		final int MAX_SCHICHTEN = 20;
 		HashSet<OmpId> schichten[] = new HashSet[MAX_SCHICHTEN];
-		HashSet<OmpId> tmpBlacklist = new HashSet<OmpId>();
+		HashSet<OmpId> signingBlacklist = new HashSet<OmpId>();
 		//HashSet<OmpId> currentSchicht = new HashSet<OmpId>();
 
 		
@@ -52,8 +52,6 @@ public class Main {
 			// erste schicht?
 			{
 				// fülle die erste schicht mit den wurzeln
-				// suche alle blacklisteinträge die von dieser schicht kommen
-				// füge die blacklisted ids einer lokalen liste hinzu (1)
 			}
 			
 			// zweite schicht?
@@ -62,11 +60,14 @@ public class Main {
 				{
 					// gehe durch die kinder dieser id
 					{
-						// prüfe, ob das kind in der lokalen blacklist ist (1)
-						// falls ja->ignorieren
+						// markiere es als valid-fingerprint
+						
+						// prüfe, ob das kind in der lokalen blacklist für "signing" ist (1)
+						// falls ja ignorieren
 						// falls nein
 						{
 							// übernehme dieses kind in die aktuelle schicht
+							// und markiere es zunächst als trusted-Identmanager
 						}
 					}
 				}
@@ -77,7 +78,15 @@ public class Main {
 				// prüfe, ob von dieser id ein blacklisteintrag kommt.
 				// falls ja
 				{
-					// nehmen dein eintrag in die lokale blacklist auf (1)
+					// nehme den eintrag in die lokale blacklist auf (1)
+					// falls der geblacklistete das flag trusted-identmanager
+					// besitzt
+					{
+						// das flag trusted-identmanager wird wieder entzogen.
+						// Gehe rekursiv durch seine Kinder und entferne bei
+						// ihnen sowohl das trusted-identmanager flag, als auch
+						// das valid fingerprint flag (2)
+					}
 				}
 			}
 		}
@@ -85,6 +94,10 @@ public class Main {
 		// TODO in späteren Schritten: prüfen, ob der blacklisteintrag legitim ist
 		// (also ob überhaupt ein solecher vertraug unterzeichnet wurde)
 		
+		/*
+		 *  (2)
+		 *  
+		 */
 		
 		/*
 		int schicht = -1;
