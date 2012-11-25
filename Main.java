@@ -43,39 +43,61 @@ public class Main {
 		 */
 		final int MAX_SCHICHTEN = 20;
 		HashSet<OmpId> schichten[] = new HashSet[MAX_SCHICHTEN];
-		HashSet<OmpId> signingBlacklist = new HashSet<OmpId>();
-		//HashSet<OmpId> currentSchicht = new HashSet<OmpId>();
+		//HashSet<OmpId> signingBlacklist = new HashSet<OmpId>();
+		HashSet<String> signingBlacklistedFingerprints = new HashSet<String>();
+		HashSet<OmpId> currentSchicht;
 
 		
-		// für jede schicht
+		int anzahlSchichten = 0;
 		{
-			// erste schicht?
-			{
-				// fülle die erste schicht mit den wurzeln
-			}
+			currentSchicht = new HashSet<OmpId>();
 			
-			// zweite schicht?
+			// erste schicht?
+			if(anzahlSchichten==0) {
+				for (OmpId wurzel : rootIds) {
+					currentSchicht.add(wurzel);
+				}
+			} else
+			
+			// zweite oder weitere schicht?
 			{
 				// gehe durch alle ids der oberen schicht (obige ids sind gültig)
-				{
+				for(OmpId id : schichten[anzahlSchichten-1]) {
 					// gehe durch die kinder dieser id
+					OmpId childs[] = id.getSignedFingerprints();
+					for(OmpId child : childs)
 					{
 						// markiere es als valid-fingerprint
+						child.setValidFingerprint(true);
 						
-						// prüfe, ob das kind in der lokalen blacklist für "signing" ist (1)
-						// falls ja ignorieren
+						// prüfe, ob das kind in der lokalen blacklist für "bad-signing" ist (1)
+						boolean blacklisted = signingBlacklistedFingerprints.contains(child.getFingerprint());
+						
+						if(blacklisted) {
+							// falls ja ignorieren
+						} else
 						// falls nein
 						{
 							// übernehme dieses kind in die aktuelle schicht
-							// und markiere es zunächst als trusted-Identmanager
+							currentSchicht.add(child);
+							
+							// und markiere es vorübergehend als trusted-Identmanager
+							child.setTrustedIdentmanager(true);
 						}
 					}
 				}
 			}
 			
 			// gehe durch alle ids der aktuellen schicht
-			{
+			for(OmpId id : currentSchicht) {
 				// prüfe, ob von dieser id ein blacklisteintrag kommt.
+				
+				/*HashSet<BlacklistEntry> bles =
+				blacklist.getBlacklistEntriesBy(
+						new String[]{child.getFingerprint()},
+						(OmpId[])currentSchicht.toArray(),
+						new String[]{"bad-signing"});*/
+				
 				// falls ja
 				{
 					// nehme den eintrag in die lokale blacklist auf (1)
@@ -89,59 +111,17 @@ public class Main {
 					}
 				}
 			}
+			
+			schichten[anzahlSchichten] = currentSchicht;
+			anzahlSchichten++;
 		}
 		
 		// TODO in späteren Schritten: prüfen, ob der blacklisteintrag legitim ist
 		// (also ob überhaupt ein solecher vertraug unterzeichnet wurde)
 		
-		/*
-		 *  (2)
-		 *  
-		 */
-		
-		/*
-		int schicht = -1;
-		do {
-			schicht++;
-			schichten[schicht] = new HashSet<OmpId>();
-			currentSchicht = schichten[schicht];
-			
-			if(schicht==0) {
-				for (OmpId ompId : rootIds) {
-					currentSchicht.add(ompId);
-				}
-			} else {
-				// nachfolgende schichten - nehme childs der parents auf
-				for (OmpId signer : schichten[0]) {
-					OmpId childs[] = signer.getSignedFingerprints();
-					for (OmpId child : childs) {
-						currentSchicht.add(child);
-						child.setValidFingerprint(true); // vorübergehend, sollte nie auf einem live wot geschehen
-					}
-				}
-			}
-			// TODO: Abbrechen, wenn keine weiteren Kinder mehr vorhanden sind oder wenn es nur noch schleifen gibt
-		} while(schicht<MAX_SCHICHTEN);
-		int anzSchichten = schicht+1;*/
-		
-		// Alle Kinder von Wurzeln sind jetzt als valid markiert
-		// Jetzt müssen die Blacklisteinträge schichtenweise verarbeitet werden
-		/*
-		for(int i=0;i<anzSchichten;i++) {
-			currentSchicht = schichten[i];
-			
-			HashSet<BlacklistEntry> bles =
-					blacklist.getBlacklistEntriesBy(null,
-							(OmpId[])currentSchicht.toArray(),
-							new String[]{"bad-signing"});
-			
-			for (BlacklistEntry e : bles) {
-				// e ist ein Blacklisteintrag auf aktueller Schicht
-			}
-		}
 
-		*/
 		
+
 		// Phase 3
 		
 
