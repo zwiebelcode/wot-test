@@ -89,25 +89,38 @@ public class Main {
 			}
 			
 			// gehe durch alle ids der aktuellen schicht
-			for(OmpId id : currentSchicht) {
-				// prüfe, ob von dieser id ein blacklisteintrag kommt.
+			// prüfe, ob von dieser id ein blacklisteintrag kommt.
+			
+			HashSet<BlacklistEntry> bles =
+			blacklist.getBlacklistEntriesBy(
+					null,
+					(OmpId[])currentSchicht.toArray(),
+					new String[]{"bad-signing"});
+			
+			for(BlacklistEntry badFingerprint : bles)
+			// falls ja
+			{
+				// nehme den eintrag in die lokale blacklist auf (1)
+				signingBlacklistedFingerprints.add(badFingerprint.fingerprint);
 				
-				/*HashSet<BlacklistEntry> bles =
-				blacklist.getBlacklistEntriesBy(
-						new String[]{child.getFingerprint()},
-						(OmpId[])currentSchicht.toArray(),
-						new String[]{"bad-signing"});*/
-				
-				// falls ja
+				// finde alle OmpIds mit diesem Fingerprint
+				for(OmpId checkForBlacklist : wot)
 				{
-					// nehme den eintrag in die lokale blacklist auf (1)
-					// falls der geblacklistete das flag trusted-identmanager
-					// besitzt
-					{
-						// das flag trusted-identmanager wird wieder entzogen.
-						// Gehe rekursiv durch seine Kinder und entferne bei
-						// ihnen sowohl das trusted-identmanager flag, als auch
-						// das valid fingerprint flag (2)
+					if(checkForBlacklist.getFingerprint().equals(badFingerprint.fingerprint)) {
+						
+						
+						// falls der geblacklistete das flag trusted-identmanager
+						// besitzt
+						if(checkForBlacklist.isTrustedIdentmanager())
+						{
+							// das flag trusted-identmanager wird wieder entzogen.
+							checkForBlacklist.setTrustedIdentmanager(false);
+							
+							// Gehe rekursiv durch seine Kinder und entferne bei
+							// ihnen sowohl das trusted-identmanager flag, als auch
+							// das valid fingerprint flag (2)
+							removeChildTrust(checkForBlacklist);
+						}
 					}
 				}
 			}
@@ -118,16 +131,29 @@ public class Main {
 		
 		// TODO in späteren Schritten: prüfen, ob der blacklisteintrag legitim ist
 		// (also ob überhaupt ein solecher vertraug unterzeichnet wurde)
-		
-
-		
+				
 
 		// Phase 3
+		/*
+		 * Phase 3b: Kopiere L2 nach L3. Bei allen als valid-fingerprint oder valid-hash markierten
+		 * arbiter wird überprüft, ob sie sich auf einen trusted root arbiter zurückführen lassen.
+		 * falls das der fall ist, wird er in L3 als trusted-notary bzw. trusted-identmanager markiert.
+		 * falls nein, dann empfangen alle seine signierten kinder von ihm keinen valid-hash oder
+		 * valid-fingerprint mehr. Abbildung N-3 sollte hier funktionieren.
+		 */
 		
 
 		// === Das Ergebnis der Trust Berechnung ausgeben
 		for (OmpId ompId : wot) {
 			ompId.toString();
+		}
+	}
+	
+	private static void removeChildTrust(OmpId parent) {
+		for(OmpId child : parent.getSignedFingerprints()) {
+			child.setTrustedIdentmanager(false);
+			child.setValidFingerprint(false);
+			removeChildTrust(child);
 		}
 	}
 }
