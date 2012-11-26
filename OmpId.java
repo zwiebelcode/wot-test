@@ -23,6 +23,10 @@ public class OmpId {
 	public OmpId(String onionkey) {
 		this.onionkey = onionkey;
 	}
+	
+	public void signHonestFingerprintingContract(OmpId contractArbiter) {
+		this.parentArbiter = contractArbiter;
+	}
 
 	public void setValidFingerprint(boolean validFingerprint) {
 		this.validFingerprint = validFingerprint;

@@ -19,14 +19,30 @@ public class Main {
 		rootIds.add(rootI);
 		rootIds.add(rootR);
 		
+		// Test Users
+		
 		OmpId userA = new OmpId("a.onion");
-		userA.requestSignatureAt(rootX, "finger-a");
+		if(false) {
+			userA.requestSignatureAt(rootX, "finger-a");
+		}
+		
+		if(false) {
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootI);
+		}
+		
+		if(true) {
+			userA.signHonestFingerprintingContract(rootI);
+		}
+
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
 		wot.add(rootX);
 		wot.add(rootI);
 		wot.add(rootR);
 		wot.add(userA);
+		
+		// End of Test Users
 		
 		// == Der Trust algorithmus
 		// Phase 1
