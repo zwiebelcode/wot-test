@@ -82,7 +82,7 @@ public class Main {
 							currentSchicht.add(child);
 							
 							// und markiere es vorübergehend als trusted-Identmanager
-							child.setTrustedIdentmanager(true);
+							//child.setTrustedIdentmanager(true);
 						}
 					}
 				}
@@ -108,10 +108,10 @@ public class Main {
 				{
 					if(checkForBlacklist.getFingerprint().equals(badFingerprint.fingerprint)) {
 						
-						
+						removeChildTrust(checkForBlacklist);
 						// falls der geblacklistete das flag trusted-identmanager
 						// besitzt
-						if(checkForBlacklist.isTrustedIdentmanager())
+						/*if(checkForBlacklist.isTrustedIdentmanager())
 						{
 							// das flag trusted-identmanager wird wieder entzogen.
 							checkForBlacklist.setTrustedIdentmanager(false);
@@ -120,7 +120,7 @@ public class Main {
 							// ihnen sowohl das trusted-identmanager flag, als auch
 							// das valid fingerprint flag (2)
 							removeChildTrust(checkForBlacklist);
-						}
+						}*/
 					}
 				}
 			}
@@ -143,9 +143,17 @@ public class Main {
 		 */
 		
 		// gehe durch alle OmpIds
-		{
+		for (OmpId ompId : wot) {
+			
 			// gehe rekursiv in diese omp id herein,
 			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
+			if(checkForArbiter(ompId)) {
+				// als trusted arbiter markieren
+				ompId.setTrustedArbiter(true);
+			} else {
+				// kinder können kein valid-hash haben
+				removeChildTrust(ompId);
+			}
 		}
 		
 
@@ -168,20 +176,14 @@ public class Main {
 			if(parentArbiter==null) {
 				return false;
 			} else {
-				if(checkForArbiter(parentArbiter)) {
-					ompId.setTrustedArbiter(true);
-					return true;
-				} else {
-					ompId.setTrustedArbiter(false);
-					return false;
-				}
+				return checkForArbiter(parentArbiter);
 			}
 		}
 	}
 	
 	private static void removeChildTrust(OmpId parent) {
 		for(OmpId child : parent.getSignedFingerprints()) {
-			child.setTrustedIdentmanager(false);
+			child.setTrustedIdentmanager(false); // TODO: removeme?
 			child.setValidFingerprint(false);
 			removeChildTrust(child);
 		}
