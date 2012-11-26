@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.Set;
 
 
 // die valid markierungen sind nur der einfachbarkeit halber hier enthalten
@@ -50,15 +51,18 @@ public class OmpId {
 		signer.signFingerprint(this, fingerprint);
 	}
 	
-	public OmpId[] getSignedFingerprints() {
-		return (OmpId[]) signedChildFingerprints.toArray();
+	public Set<OmpId> getSignedFingerprints() {
+		return (Set<OmpId>) signedChildFingerprints.clone();
 	}
+	/*public OmpId[] getSignedFingerprints() {
+		return (OmpId[]) signedChildFingerprints.toArray();
+	}*/
 
 	public String getOnionkey() {
 		return onionkey;
 	}
 
-	public boolean isValidHash() {
+	public boolean isValidFingerprint() {
 		return validFingerprint;
 	}
 
@@ -84,6 +88,29 @@ public class OmpId {
 	
 	@Override
 	public String toString() {
-		return onionkey + " witch fingerprint " + fingerprint;
+		String hashInfo;
+		String arbiterInfo;
+		String identInfo;
+		
+		if(isValidFingerprint()) {
+			hashInfo = "valid, ";
+		} else {
+			hashInfo = "invalid, ";
+		}
+		
+		if(isTrustedArbiter()) {
+			arbiterInfo = "trusted arbiter, ";
+		} else {
+			arbiterInfo = "untrusted arbiter, ";
+		}
+		
+		if(isTrustedIdentmanager()) {
+			identInfo = "trusted identmanager";
+		} else {
+			identInfo = "untrusted identmanager";
+		}
+		
+		return onionkey + " with fingerprint " + fingerprint + ": "
+			+ hashInfo + arbiterInfo + identInfo;
 	}
 }

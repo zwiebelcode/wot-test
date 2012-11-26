@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.Set;
 
 
 public class Main {
@@ -64,7 +65,7 @@ public class Main {
 				// gehe durch alle ids der oberen schicht (obige ids sind gültig)
 				for(OmpId id : schichten[anzahlSchichten-1]) {
 					// gehe durch die kinder dieser id
-					OmpId childs[] = id.getSignedFingerprints();
+					Set<OmpId> childs = id.getSignedFingerprints();
 					for(OmpId child : childs)
 					{
 						// markiere es als valid-fingerprint
@@ -90,12 +91,14 @@ public class Main {
 			
 			// gehe durch alle ids der aktuellen schicht
 			// prüfe, ob von dieser id ein blacklisteintrag kommt.
+			HashSet<String> badKeywords = new HashSet<String>();
+			badKeywords.add("bad-signing");
 			
 			HashSet<BlacklistEntry> bles =
 			blacklist.getBlacklistEntriesBy(
 					null,
-					(OmpId[])currentSchicht.toArray(),
-					new String[]{"bad-signing"});
+					currentSchicht,
+					badKeywords);
 			
 			for(BlacklistEntry badFingerprint : bles)
 			// falls ja
@@ -150,6 +153,7 @@ public class Main {
 			if(checkForArbiter(ompId)) {
 				// als trusted arbiter markieren
 				ompId.setTrustedArbiter(true);
+				ompId.setTrustedIdentmanager(true);
 			} else {
 				// kinder können kein valid-hash haben
 				removeChildTrust(ompId);
@@ -159,7 +163,7 @@ public class Main {
 
 		// === Das Ergebnis der Trust Berechnung ausgeben
 		for (OmpId ompId : wot) {
-			ompId.toString();
+			System.out.println(ompId.toString());
 		}
 	}
 	

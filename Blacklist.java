@@ -1,4 +1,5 @@
 import java.util.HashSet;
+import java.util.Set;
 
 
 public class Blacklist {
@@ -61,6 +62,61 @@ public class Blacklist {
 			if( (searchFingerprints==null || searchFingerprints.length<=0 || fingerprintMatches) &&
 					(searchFingerprintSigners==null || searchFingerprintSigners.length<=0 || fingerprintSignerMatches) &&
 					(searchFraudNames==null || searchFraudNames.length<=0 || fraudNameMatches) ) {
+				filteredBlacklist.add(entry);
+			}
+		}
+		
+		return filteredBlacklist;
+	}
+	
+	public HashSet<BlacklistEntry> getBlacklistEntriesBy(
+			Set<String> searchFingerprints,
+			Set<OmpId> searchFingerprintSigners,
+			Set<String> searchFraudNames) {
+		
+		HashSet<BlacklistEntry> filteredBlacklist = new HashSet<BlacklistEntry>();
+		
+		boolean fingerprintMatches;
+		boolean fingerprintSignerMatches;
+		boolean fraudNameMatches;
+		
+		for (BlacklistEntry entry : blacklist) {
+			fingerprintMatches = false;
+			fingerprintSignerMatches = false;
+			fraudNameMatches = false;
+			
+			if(searchFingerprints!=null && searchFingerprints.size()>0) {
+				for (String searchFingerprint : searchFingerprints) {
+					if(entry.fingerprint.equals(searchFingerprint)) {
+						fingerprintMatches = true;
+						break;
+					}
+				}
+			}
+			
+			if(searchFingerprintSigners!=null && searchFingerprintSigners.size()>0) {
+				for (OmpId searchFingerprintSigner : searchFingerprintSigners) {
+					if(entry.fingerprintSigner.equals(searchFingerprintSigner)) {
+						fingerprintSignerMatches = true;
+						break;
+					}
+				}
+			}
+			
+			if(searchFraudNames!=null && searchFraudNames.size()>0) {
+				for (String searchFraudName : searchFraudNames) {
+					if(entry.fraudName.equals(searchFraudName)) {
+						fraudNameMatches = true;
+						break;
+					}
+				}
+			}
+			
+			
+			
+			if( (searchFingerprints==null || searchFingerprints.size()<=0 || fingerprintMatches) &&
+					(searchFingerprintSigners==null || searchFingerprintSigners.size()<=0 || fingerprintSignerMatches) &&
+					(searchFraudNames==null || searchFraudNames.size()<=0 || fraudNameMatches) ) {
 				filteredBlacklist.add(entry);
 			}
 		}
