@@ -50,12 +50,14 @@ public class Main {
 
 		
 		int anzahlSchichten = 0;
-		{
+		do {
+			System.out.println("Schichten: " + anzahlSchichten);
 			currentSchicht = new HashSet<OmpId>();
 			
 			// erste schicht?
 			if(anzahlSchichten==0) {
 				for (OmpId wurzel : rootIds) {
+					System.out.println("Add root");
 					currentSchicht.add(wurzel);
 				}
 			} else
@@ -68,6 +70,7 @@ public class Main {
 					Set<OmpId> childs = id.getSignedFingerprints();
 					for(OmpId child : childs)
 					{
+						System.out.println("found child of level above");
 						// markiere es als valid-fingerprint
 						child.setValidFingerprint(true);
 						
@@ -130,7 +133,7 @@ public class Main {
 			
 			schichten[anzahlSchichten] = currentSchicht;
 			anzahlSchichten++;
-		}
+		} while(anzahlSchichten < MAX_SCHICHTEN);
 		
 		// TODO in späteren Schritten: prüfen, ob der blacklisteintrag legitim ist
 		// (also ob überhaupt ein solecher vertraug unterzeichnet wurde)
