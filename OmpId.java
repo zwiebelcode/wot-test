@@ -81,4 +81,9 @@ public class OmpId {
 	public String getFingerprint() {
 		return fingerprint;
 	}
+	
+	@Override
+	public String toString() {
+		return onionkey + " witch fingerprint " + fingerprint;
+	}
 }

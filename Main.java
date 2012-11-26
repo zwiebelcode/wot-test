@@ -142,10 +142,40 @@ public class Main {
 		 * valid-fingerprint mehr. Abbildung N-3 sollte hier funktionieren.
 		 */
 		
+		// gehe durch alle OmpIds
+		{
+			// gehe rekursiv in diese omp id herein,
+			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
+		}
+		
 
 		// === Das Ergebnis der Trust Berechnung ausgeben
 		for (OmpId ompId : wot) {
 			ompId.toString();
+		}
+	}
+	
+	// TODO: MAX DEPTH
+	private static boolean checkForArbiter(OmpId ompId) {
+		if(ompId==null) {
+			return false;
+		}
+		
+		if(ompId.isTrustedArbiter()) {
+			return true;
+		} else {
+			OmpId parentArbiter = ompId.getParentArbiter();
+			if(parentArbiter==null) {
+				return false;
+			} else {
+				if(checkForArbiter(parentArbiter)) {
+					ompId.setTrustedArbiter(true);
+					return true;
+				} else {
+					ompId.setTrustedArbiter(false);
+					return false;
+				}
+			}
 		}
 	}
 	
