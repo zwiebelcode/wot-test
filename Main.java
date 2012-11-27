@@ -134,7 +134,7 @@ public class Main {
 			// check if it is ok, to let this blacklist both E and F
 		}
 		
-		if(true) { // Abbildung N-6
+		if(false) { // Abbildung N-6
 			// Branch 1
 			userA.requestSignatureAt(rootX, "finger-a");
 			userA.signHonestFingerprintingContract(rootX);
@@ -163,8 +163,17 @@ public class Main {
 			// but not here, because higher layer comes first
 		}
 		
-		// nutzung eines anderen arbiter, der invalid oder geblacklistet ist über niedrige oder hohe ebene
-		// (drei fälle)
+		if(true) {
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(userB);
+			
+			userB.requestSignatureAt(rootI, "finger-b");
+			userB.signHonestFingerprintingContract(rootI);
+			
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-b", rootI, "bad-signing"));
+			// here, bad-signing also means, that he cant be arbiter for signing any more
+			// BUG :-(
+		}
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
 		wot.add(rootX);
