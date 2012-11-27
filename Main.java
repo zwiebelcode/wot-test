@@ -131,10 +131,10 @@ public class Main {
 			
 			// Blacklist
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userF, "bad-signing"));
-			// check if it is ok, to let this blacklist borth E and F
+			// check if it is ok, to let this blacklist both E and F
 		}
 		
-		if(true) { // Abbildung 
+		if(true) { // Abbildung N-6
 			// Branch 1
 			userA.requestSignatureAt(rootX, "finger-a");
 			userA.signHonestFingerprintingContract(rootX);
@@ -158,8 +158,13 @@ public class Main {
 			// Blacklist
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-c", userF, "bad-signing"));
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userC, "bad-signing"));
+			
+			// lower layer is able to blacklist higher layer,
+			// but not here, because higher layer comes first
 		}
-
+		
+		// nutzung eines anderen arbiter, der invalid oder geblacklistet ist über niedrige oder hohe ebene
+		// (drei fälle)
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
 		wot.add(rootX);
