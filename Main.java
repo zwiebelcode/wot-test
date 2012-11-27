@@ -21,14 +21,12 @@ public class Main {
 		rootIds.add(rootR);
 		
 		// Test Users
-		
 		OmpId userA = new OmpId("a.onion");
 		OmpId userB = new OmpId("b.onion");
 		OmpId userC = new OmpId("c.onion");
 		OmpId userD = new OmpId("d.onion");
 		OmpId userE = new OmpId("e.onion");
 		OmpId userF = new OmpId("f.onion");
-		
 		
 		if(false) {
 			userA.requestSignatureAt(rootX, "finger-a");
@@ -157,11 +155,9 @@ public class Main {
 			userF.requestSignatureAt(userE, "finger-f");
 			userF.signHonestFingerprintingContract(userE);
 			
-			// Blacklist // konflict situation
+			// Blacklist
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-c", userF, "bad-signing"));
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userC, "bad-signing"));
-			
-			// Fehler : eigentlich sollte e auf valid bleiben und c auf valid aber untrusted
 		}
 
 		
@@ -178,8 +174,7 @@ public class Main {
 		
 		// End of Test Users
 		
-		// == Der Trust algorithmus
-		System.out.println("Phase 1");
+		// == Der Trust Algorithmus
 		for (OmpId wurzel : rootIds) {
 			wurzel.setTrustedRoot();
 		}
@@ -192,23 +187,18 @@ public class Main {
 		 * --- Schließlich werden alle OmpIds die mindestens eine route ohne Blacklisteinträge
 		 * zur wurzel haben, als valid-hash bzw. valid-fingerprint markiert.
 		 */
-		System.out.println("Phase 2");
 		final int MAX_SCHICHTEN = 20;
 		HashSet<OmpId> schichten[] = new HashSet[MAX_SCHICHTEN];
-		//HashSet<OmpId> signingBlacklist = new HashSet<OmpId>();
-		HashSet<String> signingBlacklistedFingerprints = new HashSet<String>();
+		HashSet<String> verifiedBlacklistedFingerprints = new HashSet<String>();
 		HashSet<OmpId> currentSchicht;
-
 		
 		int anzahlSchichten = 0; // anzahl bereits befuellter Schichten
 		do {
-			//System.out.println("Schichten: " + anzahlSchichten);
-			currentSchicht = new HashSet<OmpId>(); // In dem Schleifendurchgang zu fuellender Schicht
+			currentSchicht = new HashSet<OmpId>(); // In diesem Schleifendurchgang zu fuellende Schicht
 			
 			// erste schicht?
 			if(anzahlSchichten==0) {
 				for (OmpId wurzel : rootIds) {
-					//System.out.println("Add root");
 					currentSchicht.add(wurzel);
 				}
 			} else
@@ -221,18 +211,14 @@ public class Main {
 					Set<OmpId> childs = id.getSignedFingerprints();
 					for(OmpId child : childs)
 					{
-						//System.out.println("found child of level above");
 						// markiere es als valid-fingerprint
 						child.setValidFingerprint(true);
 						
-						// prüfe, ob das kind in der lokalen blacklist für "bad-signing" ist (1)
-						boolean blacklisted = signingBlacklistedFingerprints.contains(child.getFingerprint());
+						// prüfe, ob das kind in der schrittweise aufgebauten verifizierten blacklist für "bad-signing" ist (1)
+						boolean blacklisted = verifiedBlacklistedFingerprints.contains(child.getFingerprint());
 						
 						if(blacklisted) {
 							// falls ja ignorieren
-							
-							// TODO: Remove future blacklistentries from this blacklisted child? nein?
-							
 						} else
 						// falls nein
 						{
@@ -261,16 +247,13 @@ public class Main {
 			// falls ja
 			{
 				// nehme den eintrag in die lokale blacklist auf (1)
-				signingBlacklistedFingerprints.add(badFingerprint.fingerprint);
+				verifiedBlacklistedFingerprints.add(badFingerprint.fingerprint);
 				
 				// finde alle OmpIds mit diesem Fingerprint
 				for(OmpId checkOmpId : wot)
 				{
 					String fingerprint = checkOmpId.getFingerprint();
 					if(fingerprint!=null && fingerprint.equals(badFingerprint.fingerprint)) {
-						// todo: doppelt
-						
-						removeChildTrust(checkOmpId);
 						// falls der geblacklistete das flag trusted-identmanager
 						// besitzt
 						if(checkOmpId.isTrustedIdentmanager())
@@ -304,12 +287,8 @@ public class Main {
 		 * valid-fingerprint mehr. Abbildung N-3 sollte hier funktionieren.
 		 */
 		
-		System.out.println("Phase 3");
-		
 		// gehe durch alle OmpIds
 		for (OmpId ompId : wot) {
-			//System.out.println(ompId + ": ");
-			
 			// gehe rekursiv in diese omp id herein,
 			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
 			if( ompId.isTrustedIdentmanager() && checkForArbiter(ompId)) {
@@ -325,7 +304,6 @@ public class Main {
 		}
 		
 
-		System.out.println("Ergebnisse");
 		// === Das Ergebnis der Trust Berechnung ausgeben
 		for (OmpId ompId : wot) {
 			System.out.println(ompId.toString());
@@ -352,7 +330,7 @@ public class Main {
 	
 	private static void removeChildTrust(OmpId parent) {
 		for(OmpId child : parent.getSignedFingerprints()) {
-			child.setTrustedIdentmanager(false); // TODO: removeme?
+			child.setTrustedIdentmanager(false);
 			child.setValidFingerprint(false);
 			removeChildTrust(child);
 		}
