@@ -172,7 +172,6 @@ public class Main {
 			
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-b", rootI, "bad-signing"));
 			// here, bad-signing also means, that he cant be arbiter for signing any more
-			// BUG :-(
 		}
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
@@ -334,7 +333,7 @@ public class Main {
 			return true;
 		} else {
 			OmpId parentArbiter = ompId.getParentArbiter();
-			if(parentArbiter==null) {
+			if(!ompId.isTrustedIdentmanager() || parentArbiter==null) {
 				return false;
 			} else {
 				return checkForArbiter(parentArbiter);
