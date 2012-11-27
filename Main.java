@@ -22,6 +22,10 @@ public class Main {
 		// Test Users
 		
 		OmpId userA = new OmpId("a.onion");
+		OmpId userB = new OmpId("b.onion");
+		OmpId userC = new OmpId("c.onion");
+		OmpId userD = new OmpId("d.onion");
+		
 		if(false) {
 			userA.requestSignatureAt(rootX, "finger-a");
 		}
@@ -29,10 +33,52 @@ public class Main {
 		if(false) {
 			userA.requestSignatureAt(rootX, "finger-a");
 			userA.signHonestFingerprintingContract(rootI);
+		}
+		
+		if(false) {
+			userA.signHonestFingerprintingContract(rootI);
+		}
+		
+		if(false) {
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+		}
+		
+		if(false) {
+			userA.signHonestFingerprintingContract(rootX);
+		}
+		
+		if(false) {
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userC.requestSignatureAt(userB, "finger-c");
+			userD.requestSignatureAt(userC, "finger-d");
+		}
+		
+		if(false) {
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userB.signHonestFingerprintingContract(userA);
+			
+			userC.requestSignatureAt(userB, "finger-c");
+			userD.requestSignatureAt(userC, "finger-d");
 		}
 		
 		if(true) {
-			userA.signHonestFingerprintingContract(rootI);
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userB.signHonestFingerprintingContract(userA);
+			
+			userC.requestSignatureAt(userB, "finger-c");
+			userD.requestSignatureAt(userC, "finger-d");
+			
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-b", userA, "bad-signing"));
 		}
 
 		
@@ -41,11 +87,14 @@ public class Main {
 		wot.add(rootI);
 		wot.add(rootR);
 		wot.add(userA);
+		wot.add(userB);
+		wot.add(userC);
+		wot.add(userD);
 		
 		// End of Test Users
 		
 		// == Der Trust algorithmus
-		// Phase 1
+		System.out.println("Phase 1");
 		for (OmpId wurzel : rootIds) {
 			wurzel.setTrustedRoot();
 		}
@@ -58,6 +107,7 @@ public class Main {
 		 * --- Schließlich werden alle OmpIds die mindestens eine route ohne Blacklisteinträge
 		 * zur wurzel haben, als valid-hash bzw. valid-fingerprint markiert.
 		 */
+		System.out.println("Phase 2");
 		final int MAX_SCHICHTEN = 20;
 		HashSet<OmpId> schichten[] = new HashSet[MAX_SCHICHTEN];
 		//HashSet<OmpId> signingBlacklist = new HashSet<OmpId>();
@@ -164,12 +214,15 @@ public class Main {
 		 * valid-fingerprint mehr. Abbildung N-3 sollte hier funktionieren.
 		 */
 		
+		System.out.println("Phase 3");
+		
 		// gehe durch alle OmpIds
 		for (OmpId ompId : wot) {
+			System.out.println(ompId + ": ");
 			
 			// gehe rekursiv in diese omp id herein,
 			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
-			if(checkForArbiter(ompId)) {
+			if( (ompId.isValidFingerprint() || ompId.isTrustedIdentmanager()) && checkForArbiter(ompId)) {
 				// als trusted arbiter markieren
 				ompId.setTrustedArbiter(true);
 				ompId.setTrustedIdentmanager(true);
@@ -180,6 +233,7 @@ public class Main {
 		}
 		
 
+		System.out.println("Ergebnisse");
 		// === Das Ergebnis der Trust Berechnung ausgeben
 		for (OmpId ompId : wot) {
 			System.out.println(ompId.toString());
