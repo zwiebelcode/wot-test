@@ -3,6 +3,7 @@ import java.util.Set;
 
 
 public class Main {
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		// Einfaches Testprogramm für den erarbeiteten Algorithmus a1 für die Trust-Prüfung
 		// Diese Variante enthält als vereinfachung keine Notare, da diese ja nur der Anonymisierung dienen.
@@ -25,6 +26,9 @@ public class Main {
 		OmpId userB = new OmpId("b.onion");
 		OmpId userC = new OmpId("c.onion");
 		OmpId userD = new OmpId("d.onion");
+		OmpId userE = new OmpId("e.onion");
+		OmpId userF = new OmpId("f.onion");
+		
 		
 		if(false) {
 			userA.requestSignatureAt(rootX, "finger-a");
@@ -80,6 +84,83 @@ public class Main {
 			
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-b", userA, "bad-signing"));
 		}
+		
+		if(false) {
+			// Branch 1
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userB.signHonestFingerprintingContract(userA);
+			
+			userC.requestSignatureAt(userB, "finger-c");
+			userC.signHonestFingerprintingContract(userB);
+			
+			userD.requestSignatureAt(userC, "finger-d");
+			userD.signHonestFingerprintingContract(userC);
+			
+			// Branch 2
+			userE.requestSignatureAt(rootI, "finger-e");
+			userE.signHonestFingerprintingContract(rootI);
+			
+			userF.requestSignatureAt(userE, "finger-f");
+			userF.signHonestFingerprintingContract(userE);
+			
+			// Blacklist
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-c", userF, "bad-signing"));
+		}
+		
+		if(false) {
+			// Branch 1
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userB.signHonestFingerprintingContract(userA);
+			
+			userC.requestSignatureAt(userB, "finger-c");
+			userC.signHonestFingerprintingContract(userB);
+			
+			userD.requestSignatureAt(userC, "finger-d");
+			userD.signHonestFingerprintingContract(userC);
+			
+			// Branch 2
+			userE.requestSignatureAt(rootI, "finger-e");
+			userE.signHonestFingerprintingContract(rootI);
+			
+			userF.requestSignatureAt(userE, "finger-f");
+			userF.signHonestFingerprintingContract(userE);
+			
+			// Blacklist
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userF, "bad-signing"));
+			// check if it is ok, to let this blacklist borth E and F
+		}
+		
+		if(true) {
+			// Branch 1
+			userA.requestSignatureAt(rootX, "finger-a");
+			userA.signHonestFingerprintingContract(rootX);
+			
+			userB.requestSignatureAt(userA, "finger-b");
+			userB.signHonestFingerprintingContract(userA);
+			
+			userC.requestSignatureAt(userB, "finger-c");
+			userC.signHonestFingerprintingContract(userB);
+			
+			userD.requestSignatureAt(userC, "finger-d");
+			userD.signHonestFingerprintingContract(userC);
+			
+			// Branch 2
+			userE.requestSignatureAt(rootI, "finger-e");
+			userE.signHonestFingerprintingContract(rootI);
+			
+			userF.requestSignatureAt(userE, "finger-f");
+			userF.signHonestFingerprintingContract(userE);
+			
+			// Blacklist // konflict situation
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-c", userF, "bad-signing"));
+			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userC, "bad-signing"));
+		}
 
 		
 		HashSet<OmpId> wot = new HashSet<OmpId>();
@@ -90,6 +171,8 @@ public class Main {
 		wot.add(userB);
 		wot.add(userC);
 		wot.add(userD);
+		wot.add(userE);
+		wot.add(userF);
 		
 		// End of Test Users
 		
@@ -117,13 +200,13 @@ public class Main {
 		
 		int anzahlSchichten = 0;
 		do {
-			System.out.println("Schichten: " + anzahlSchichten);
+			//System.out.println("Schichten: " + anzahlSchichten);
 			currentSchicht = new HashSet<OmpId>();
 			
 			// erste schicht?
 			if(anzahlSchichten==0) {
 				for (OmpId wurzel : rootIds) {
-					System.out.println("Add root");
+					//System.out.println("Add root");
 					currentSchicht.add(wurzel);
 				}
 			} else
@@ -136,7 +219,7 @@ public class Main {
 					Set<OmpId> childs = id.getSignedFingerprints();
 					for(OmpId child : childs)
 					{
-						System.out.println("found child of level above");
+						//System.out.println("found child of level above");
 						// markiere es als valid-fingerprint
 						child.setValidFingerprint(true);
 						
@@ -219,7 +302,7 @@ public class Main {
 		
 		// gehe durch alle OmpIds
 		for (OmpId ompId : wot) {
-			System.out.println(ompId + ": ");
+			//System.out.println(ompId + ": ");
 			
 			// gehe rekursiv in diese omp id herein,
 			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
