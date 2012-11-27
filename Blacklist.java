@@ -13,6 +13,7 @@ public class Blacklist {
 		blacklist.add(e);
 	}
 	
+	/*
 	// Mit Sets ließe sich nachfolgendes einfacher und performanter umsetzen. testen!
 	public HashSet<BlacklistEntry> getBlacklistEntriesBy(
 			String searchFingerprints[],
@@ -30,7 +31,7 @@ public class Blacklist {
 			fingerprintSignerMatches = false;
 			fraudNameMatches = false;
 			
-			if(searchFingerprints!=null && searchFingerprints.length>0) {
+			if(searchFingerprints!=null) {
 				for (String searchFingerprint : searchFingerprints) {
 					if(entry.fingerprint.equals(searchFingerprint)) {
 						fingerprintMatches = true;
@@ -39,7 +40,7 @@ public class Blacklist {
 				}
 			}
 			
-			if(searchFingerprintSigners!=null && searchFingerprintSigners.length>0) {
+			if(searchFingerprintSigners!=null) {
 				for (OmpId searchFingerprintSigner : searchFingerprintSigners) {
 					if(entry.fingerprintSigner.equals(searchFingerprintSigner)) {
 						fingerprintSignerMatches = true;
@@ -48,7 +49,7 @@ public class Blacklist {
 				}
 			}
 			
-			if(searchFraudNames!=null && searchFraudNames.length>0) {
+			if(searchFraudNames!=null) {
 				for (String searchFraudName : searchFraudNames) {
 					if(entry.fraudName.equals(searchFraudName)) {
 						fraudNameMatches = true;
@@ -59,15 +60,15 @@ public class Blacklist {
 			
 			
 			
-			if( (searchFingerprints==null || searchFingerprints.length<=0 || fingerprintMatches) &&
-					(searchFingerprintSigners==null || searchFingerprintSigners.length<=0 || fingerprintSignerMatches) &&
-					(searchFraudNames==null || searchFraudNames.length<=0 || fraudNameMatches) ) {
+			if( (searchFingerprints==null || fingerprintMatches) &&
+					(searchFingerprintSigners==null || fingerprintSignerMatches) &&
+					(searchFraudNames==null || fraudNameMatches) ) {
 				filteredBlacklist.add(entry);
 			}
 		}
 		
 		return filteredBlacklist;
-	}
+	}*/
 	
 	public HashSet<BlacklistEntry> getBlacklistEntriesBy(
 			Set<String> searchFingerprints,
@@ -85,7 +86,7 @@ public class Blacklist {
 			fingerprintSignerMatches = false;
 			fraudNameMatches = false;
 			
-			if(searchFingerprints!=null && searchFingerprints.size()>0) {
+			if(searchFingerprints!=null) {
 				for (String searchFingerprint : searchFingerprints) {
 					if(entry.fingerprint.equals(searchFingerprint)) {
 						fingerprintMatches = true;
@@ -94,7 +95,7 @@ public class Blacklist {
 				}
 			}
 			
-			if(searchFingerprintSigners!=null && searchFingerprintSigners.size()>0) {
+			if(searchFingerprintSigners!=null) {
 				for (OmpId searchFingerprintSigner : searchFingerprintSigners) {
 					if(entry.fingerprintSigner.equals(searchFingerprintSigner)) {
 						fingerprintSignerMatches = true;
@@ -103,7 +104,7 @@ public class Blacklist {
 				}
 			}
 			
-			if(searchFraudNames!=null && searchFraudNames.size()>0) {
+			if(searchFraudNames!=null) {
 				for (String searchFraudName : searchFraudNames) {
 					if(entry.fraudName.equals(searchFraudName)) {
 						fraudNameMatches = true;
@@ -114,9 +115,9 @@ public class Blacklist {
 			
 			
 			
-			if( (searchFingerprints==null || searchFingerprints.size()<=0 || fingerprintMatches) &&
-					(searchFingerprintSigners==null || searchFingerprintSigners.size()<=0 || fingerprintSignerMatches) &&
-					(searchFraudNames==null || searchFraudNames.size()<=0 || fraudNameMatches) ) {
+			if( (searchFingerprints==null || fingerprintMatches) &&
+					(searchFingerprintSigners==null || fingerprintSignerMatches) &&
+					(searchFraudNames==null || fraudNameMatches) ) {
 				filteredBlacklist.add(entry);
 			}
 		}

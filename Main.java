@@ -136,7 +136,7 @@ public class Main {
 			// check if it is ok, to let this blacklist borth E and F
 		}
 		
-		if(true) {
+		if(true) { // Abbildung 
 			// Branch 1
 			userA.requestSignatureAt(rootX, "finger-a");
 			userA.signHonestFingerprintingContract(rootX);
@@ -160,6 +160,8 @@ public class Main {
 			// Blacklist // konflict situation
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-c", userF, "bad-signing"));
 			blacklist.addBlackListEntry(new BlacklistEntry("finger-e", userC, "bad-signing"));
+			
+			// Fehler : eigentlich sollte e auf valid bleiben und c auf valid aber untrusted
 		}
 
 		
@@ -198,10 +200,10 @@ public class Main {
 		HashSet<OmpId> currentSchicht;
 
 		
-		int anzahlSchichten = 0;
+		int anzahlSchichten = 0; // anzahl bereits befuellter Schichten
 		do {
 			//System.out.println("Schichten: " + anzahlSchichten);
-			currentSchicht = new HashSet<OmpId>();
+			currentSchicht = new HashSet<OmpId>(); // In dem Schleifendurchgang zu fuellender Schicht
 			
 			// erste schicht?
 			if(anzahlSchichten==0) {
@@ -228,6 +230,9 @@ public class Main {
 						
 						if(blacklisted) {
 							// falls ja ignorieren
+							
+							// TODO: Remove future blacklistentries from this blacklisted child? nein?
+							
 						} else
 						// falls nein
 						{
@@ -259,23 +264,24 @@ public class Main {
 				signingBlacklistedFingerprints.add(badFingerprint.fingerprint);
 				
 				// finde alle OmpIds mit diesem Fingerprint
-				for(OmpId checkForBlacklist : wot)
+				for(OmpId checkOmpId : wot)
 				{
-					String fingerprint = checkForBlacklist.getFingerprint();
+					String fingerprint = checkOmpId.getFingerprint();
 					if(fingerprint!=null && fingerprint.equals(badFingerprint.fingerprint)) {
+						// todo: doppelt
 						
-						removeChildTrust(checkForBlacklist);
+						removeChildTrust(checkOmpId);
 						// falls der geblacklistete das flag trusted-identmanager
 						// besitzt
-						if(checkForBlacklist.isTrustedIdentmanager())
+						if(checkOmpId.isTrustedIdentmanager())
 						{
 							// das flag trusted-identmanager wird wieder entzogen.
-							checkForBlacklist.setTrustedIdentmanager(false);
+							checkOmpId.setTrustedIdentmanager(false);
 							
 							// Gehe rekursiv durch seine Kinder und entferne bei
 							// ihnen sowohl das trusted-identmanager flag, als auch
 							// das valid fingerprint flag (2)
-							removeChildTrust(checkForBlacklist);
+							removeChildTrust(checkOmpId);
 						}
 					}
 				}
