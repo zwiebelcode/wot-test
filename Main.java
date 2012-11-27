@@ -68,7 +68,7 @@ public class Main {
 			userD.requestSignatureAt(userC, "finger-d");
 		}
 		
-		if(true) {
+		if(false) {
 			userA.requestSignatureAt(rootX, "finger-a");
 			userA.signHonestFingerprintingContract(rootX);
 			
@@ -152,7 +152,7 @@ public class Main {
 							currentSchicht.add(child);
 							
 							// und markiere es vorübergehend als trusted-Identmanager
-							//child.setTrustedIdentmanager(true);
+							child.setTrustedIdentmanager(true);
 						}
 					}
 				}
@@ -184,7 +184,7 @@ public class Main {
 						removeChildTrust(checkForBlacklist);
 						// falls der geblacklistete das flag trusted-identmanager
 						// besitzt
-						/*if(checkForBlacklist.isTrustedIdentmanager())
+						if(checkForBlacklist.isTrustedIdentmanager())
 						{
 							// das flag trusted-identmanager wird wieder entzogen.
 							checkForBlacklist.setTrustedIdentmanager(false);
@@ -193,7 +193,7 @@ public class Main {
 							// ihnen sowohl das trusted-identmanager flag, als auch
 							// das valid fingerprint flag (2)
 							removeChildTrust(checkForBlacklist);
-						}*/
+						}
 					}
 				}
 			}
@@ -223,12 +223,14 @@ public class Main {
 			
 			// gehe rekursiv in diese omp id herein,
 			// um zu prüfen, ob es sich auf einen trusted arbiter zurückführen lässt
-			if( (ompId.isValidFingerprint() || ompId.isTrustedIdentmanager()) && checkForArbiter(ompId)) {
+			if( ompId.isTrustedIdentmanager() && checkForArbiter(ompId)) {
 				// als trusted arbiter markieren
 				ompId.setTrustedArbiter(true);
-				ompId.setTrustedIdentmanager(true);
+				//ompId.setTrustedIdentmanager(true);
 			} else {
 				// kinder können kein valid-hash haben
+				//ompId.setTrustedArbiter(false);
+				ompId.setTrustedIdentmanager(false);
 				removeChildTrust(ompId);
 			}
 		}
