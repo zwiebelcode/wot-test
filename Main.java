@@ -178,7 +178,8 @@ public class Main {
 				// finde alle OmpIds mit diesem Fingerprint
 				for(OmpId checkForBlacklist : wot)
 				{
-					if(checkForBlacklist.getFingerprint().equals(badFingerprint.fingerprint)) {
+					String fingerprint = checkForBlacklist.getFingerprint();
+					if(fingerprint!=null && fingerprint.equals(badFingerprint.fingerprint)) {
 						
 						removeChildTrust(checkForBlacklist);
 						// falls der geblacklistete das flag trusted-identmanager
